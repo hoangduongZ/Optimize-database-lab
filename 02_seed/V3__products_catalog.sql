@@ -2,32 +2,56 @@
 -- 800,000 product_attribute_values (8/product).
 -- product_id được ánh xạ số học từ generate_series -> KHÔNG cần JOIN, insert nhanh
 -- ngay cả ở quy mô triệu dòng.
+--
+-- QUAN TRỌNG: mọi random() cần đa dạng thật theo từng dòng PHẢI được tính
+-- trực tiếp trong SELECT list của 1 subquery có FROM là generate_series
+-- (như bảng `base` dưới đây). KHÔNG bọc random() trong 1 derived table rồi
+-- CROSS JOIN LATERAL nếu derived table đó không thực sự tham chiếu cột
+-- ngoài -- Postgres coi đó là subquery KHÔNG tương quan và chỉ tính 1 LẦN
+-- DUY NHẤT cho toàn bộ statement (mọi dòng dùng chung 1 giá trị) dù có
+-- ghi chữ LATERAL. Đây không phải bug của Postgres -- đúng ngữ nghĩa SQL:
+-- LATERAL chỉ có tác dụng khi subquery THỰC SỰ tham chiếu cột ngoài.
 
 -- Từ vựng có chủ đích để bài full-text-search / LIKE (03_exercises/03) có kết quả thật.
 INSERT INTO products (category_id, brand_id, sku, name, slug, short_description, description,
                        base_price, sale_price, currency, weight, status, created_at)
 SELECT
-    (floor(random() * 50) + 1)::bigint,
-    (floor(random() * 30) + 1)::bigint,
-    'SKU-' || lpad(gs::text, 8, '0'),
-    kind.name || ' ' || variant_word.name || ' ' || gs,
-    'sku-' || lpad(gs::text, 8, '0'),
+    base.category_id,
+    base.brand_id,
+    'SKU-' || lpad(base.gs::text, 8, '0'),
+    base.kind_name || ' ' || base.variant_name || ' ' || base.gs,
+    'sku-' || lpad(base.gs::text, 8, '0'),
     'Chính hãng, bảo hành 12 tháng',
-    kind.name || ' ' || variant_word.name || ' đời mới, hiệu năng cao, phù hợp học tập, làm việc và giải trí. Model #' || gs || '.',
-    (500000 + floor(random() * 50000000))::numeric(15, 2),
-    CASE WHEN random() < 0.3 THEN (400000 + floor(random() * 45000000))::numeric(15, 2) ELSE NULL END,
+    base.kind_name || ' ' || base.variant_name || ' đời mới, hiệu năng cao, phù hợp học tập, làm việc và giải trí. Model #' || base.gs || '.',
+    base.base_price,
+    CASE WHEN base.sale_roll < 0.3 THEN base.sale_price_raw ELSE NULL END,
     'VND',
-    round((0.1 + random() * 5)::numeric, 2),
-    'ACTIVE',
-    now() - (random() * interval '900 days')
-FROM generate_series(1, 100000) AS gs
-CROSS JOIN LATERAL (
-    SELECT (ARRAY['Laptop', 'Smartphone', 'Tablet', 'Monitor', 'Keyboard',
-                  'Mouse', 'Headphone', 'Camera', 'SSD', 'RAM'])[((gs % 10) + 1)] AS name
-) AS kind
-CROSS JOIN LATERAL (
-    SELECT (ARRAY['Gaming', 'Pro', 'Lite', 'Ultra', 'Air'])[((gs % 5) + 1)] AS name
-) AS variant_word;
+    base.weight,
+    -- status thật đa dạng (90% ACTIVE / 5% INACTIVE / 3% OUT_OF_STOCK / 2% DISCONTINUED)
+    -- -- cần cho các bài luyện tập filter theo status (không chỉ toàn ACTIVE).
+    CASE
+        WHEN base.status_r < 0.90 THEN 'ACTIVE'
+        WHEN base.status_r < 0.95 THEN 'INACTIVE'
+        WHEN base.status_r < 0.98 THEN 'OUT_OF_STOCK'
+        ELSE 'DISCONTINUED'
+    END,
+    base.created_at
+FROM (
+    SELECT
+        gs,
+        (ARRAY['Laptop', 'Smartphone', 'Tablet', 'Monitor', 'Keyboard',
+               'Mouse', 'Headphone', 'Camera', 'SSD', 'RAM'])[((gs % 10) + 1)] AS kind_name,
+        (ARRAY['Gaming', 'Pro', 'Lite', 'Ultra', 'Air'])[((gs % 5) + 1)] AS variant_name,
+        (floor(random() * 50) + 1)::bigint AS category_id,
+        (floor(random() * 30) + 1)::bigint AS brand_id,
+        (500000 + floor(random() * 50000000))::numeric(15, 2) AS base_price,
+        random() AS sale_roll,
+        (400000 + floor(random() * 45000000))::numeric(15, 2) AS sale_price_raw,
+        round((0.1 + random() * 5)::numeric, 2) AS weight,
+        random() AS status_r,
+        now() - (random() * interval '900 days') AS created_at
+    FROM generate_series(1, 100000) AS gs
+) AS base;
 
 -- 2 ảnh / product
 INSERT INTO product_images (product_id, url, alt_text, is_primary, sort_order)
@@ -56,9 +80,14 @@ FROM generate_series(1, 200000) AS gs;
 -- 8 attribute value / product (attribute_id ngẫu nhiên trong 1..40)
 INSERT INTO product_attribute_values (product_id, attribute_id, value, value_number)
 SELECT
-    ceil(gs / 8.0)::bigint,
-    (floor(random() * 40) + 1)::bigint,
-    val::text,
-    val
-FROM generate_series(1, 800000) AS gs
-CROSS JOIN LATERAL (SELECT round((random() * 30)::numeric, 1) AS val) AS v;
+    ceil(base.gs / 8.0)::bigint,
+    base.attribute_id,
+    base.val::text,
+    base.val
+FROM (
+    SELECT
+        gs,
+        (floor(random() * 40) + 1)::bigint AS attribute_id,
+        round((random() * 30)::numeric, 1) AS val
+    FROM generate_series(1, 800000) AS gs
+) AS base;

@@ -8,12 +8,21 @@ SELECT
     now()
 FROM generate_series(1, 20000) AS gs;
 
+-- random() phải tính trong SELECT list của subquery có FROM generate_series
+-- trực tiếp (xem ghi chú ở đầu V3__products_catalog.sql) -- không bọc qua
+-- CROSS JOIN LATERAL không tương quan, kẻo mọi dòng dùng chung 1 giá trị.
 INSERT INTO cart_items (cart_id, product_id, variant_id, quantity, price_at_add_time)
 SELECT
-    ceil(gs / 2.0)::bigint,
-    p.product_id,
-    (p.product_id - 1) * 2 + 1,
-    (floor(random() * 3) + 1)::int,
-    (500000 + floor(random() * 50000000))::numeric(15, 2)
-FROM generate_series(1, 40000) AS gs
-CROSS JOIN LATERAL (SELECT (floor(random() * 100000) + 1)::bigint AS product_id) AS p;
+    ceil(base.gs / 2.0)::bigint,
+    base.product_id,
+    (base.product_id - 1) * 2 + 1,
+    base.quantity,
+    base.price
+FROM (
+    SELECT
+        gs,
+        (floor(random() * 100000) + 1)::bigint AS product_id,
+        (floor(random() * 3) + 1)::int AS quantity,
+        (500000 + floor(random() * 50000000))::numeric(15, 2) AS price
+    FROM generate_series(1, 40000) AS gs
+) AS base;
