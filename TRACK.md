@@ -1,0 +1,1 @@
+01_schema/V6__promotion.sql

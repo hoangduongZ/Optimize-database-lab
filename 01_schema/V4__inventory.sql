@@ -3,7 +3,7 @@
 
 CREATE TABLE warehouses (
     id      BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    name    VARCHAR(255) NOT NULL,
+    name    VARCHAR(255) NOT NULL, -- example: "Warehouse A", "Warehouse B"
     address VARCHAR(500)
 );
 

@@ -1,0 +1,2 @@
+- psql là command-line client (CLI) của PostgreSQL
+-> chương trình dùng để nói chuyện với PostgreSQL bằng terminal.

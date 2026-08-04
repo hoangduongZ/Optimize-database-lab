@@ -9,21 +9,21 @@ CREATE TABLE users (
     phone         VARCHAR(20),
     password_hash VARCHAR(255) NOT NULL,
     role          VARCHAR(20)  NOT NULL DEFAULT 'CUSTOMER'
-                  CHECK (role IN ('CUSTOMER', 'ADMIN', 'MANAGER', 'SUPPORT')),
+                  CHECK (role IN ('CUSTOMER', 'ADMIN', 'MANAGER', 'SUPPORT')), -- CHECK is a constraint to ensure the value of the column is within a specified range or set of values.
     status        VARCHAR(20)  NOT NULL DEFAULT 'ACTIVE'
                   CHECK (status IN ('ACTIVE', 'INACTIVE', 'BANNED')),
-    created_at    TIMESTAMPTZ  NOT NULL DEFAULT now(),
+    created_at    TIMESTAMPTZ  NOT NULL DEFAULT now(), -- TIMESTAMPTZ = timestamp with time zone, ex: 2023-01-01 12:00:00+07
     updated_at    TIMESTAMPTZ  NOT NULL DEFAULT now(),
     created_by    BIGINT,
     updated_by    BIGINT
 );
 
 CREATE TABLE user_profiles (
-    id         BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    id         BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY, -- BIGINT GENERATED ALWAYS AS IDENTITY = auto increment, ex: 1, 2, 3, ...
     user_id    BIGINT NOT NULL UNIQUE REFERENCES users(id),
     full_name  VARCHAR(255),
     gender     VARCHAR(10) CHECK (gender IN ('MALE', 'FEMALE', 'OTHER')),
-    dob        DATE,
+    dob        DATE, -- ex: 1990-01-01
     avatar_url VARCHAR(500),
     created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT now()

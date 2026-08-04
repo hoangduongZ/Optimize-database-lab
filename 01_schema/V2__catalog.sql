@@ -8,7 +8,7 @@ CREATE TABLE categories (
     description TEXT,
     image_url   VARCHAR(500),
     status      VARCHAR(20) NOT NULL DEFAULT 'ACTIVE' CHECK (status IN ('ACTIVE', 'INACTIVE')),
-    created_at  TIMESTAMPTZ NOT NULL DEFAULT now(),
+    created_at  TIMESTAMPTZ NOT NULL DEFAULT now(), -- example: 2023-01-01 12:00:00+00
     updated_at  TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
@@ -26,9 +26,9 @@ CREATE TABLE products (
     id                BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     category_id       BIGINT NOT NULL REFERENCES categories(id),
     brand_id          BIGINT NOT NULL REFERENCES brands(id),
-    sku               VARCHAR(100) NOT NULL UNIQUE,
+    sku               VARCHAR(100) NOT NULL UNIQUE, -- example: SKU-001
     name              VARCHAR(500) NOT NULL,
-    slug              VARCHAR(500) NOT NULL UNIQUE,
+    slug              VARCHAR(500) NOT NULL UNIQUE, --example: product-name-1
     short_description VARCHAR(1000),
     description       TEXT,
     base_price        NUMERIC(15, 2) NOT NULL,
@@ -53,8 +53,8 @@ CREATE TABLE product_images (
 CREATE TABLE product_variants (
     id               BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     product_id       BIGINT NOT NULL REFERENCES products(id),
-    sku              VARCHAR(100) NOT NULL UNIQUE,
-    attribute_values JSONB NOT NULL DEFAULT '{}'::jsonb,
+    sku              VARCHAR(100) NOT NULL UNIQUE, -- example: SKU-001-RED-L
+    attribute_values JSONB NOT NULL DEFAULT '{}'::jsonb, -- example: {"color": "red", "size": "L"}
     price_override   NUMERIC(15, 2),
     status           VARCHAR(20) NOT NULL DEFAULT 'ACTIVE' CHECK (status IN ('ACTIVE', 'INACTIVE')),
     created_at       TIMESTAMPTZ NOT NULL DEFAULT now(),
