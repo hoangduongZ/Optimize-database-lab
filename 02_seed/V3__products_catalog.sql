@@ -1,5 +1,5 @@
--- Seed: 100,000 products, 200,000 images (2/product), 200,000 variants (2/product),
--- 800,000 product_attribute_values (8/product).
+-- Seed: 300,000 products, 600,000 images (2/product), 600,000 variants (2/product),
+-- 2,400,000 product_attribute_values (8/product).
 -- product_id được ánh xạ số học từ generate_series -> KHÔNG cần JOIN, insert nhanh
 -- ngay cả ở quy mô triệu dòng.
 --
@@ -50,7 +50,7 @@ FROM (
         round((0.1 + random() * 5)::numeric, 2) AS weight,
         random() AS status_r,
         now() - (random() * interval '900 days') AS created_at
-    FROM generate_series(1, 100000) AS gs
+    FROM generate_series(1, 300000) AS gs
 ) AS base;
 
 -- 2 ảnh / product
@@ -61,7 +61,7 @@ SELECT
     'Product image ' || gs,
     (gs % 2 = 1),
     (gs % 2)
-FROM generate_series(1, 200000) AS gs;
+FROM generate_series(1, 600000) AS gs;
 
 -- 2 variant / product
 INSERT INTO product_variants (product_id, sku, attribute_values, price_override, status)
@@ -75,7 +75,7 @@ SELECT
     ),
     CASE WHEN gs % 3 = 0 THEN (500000 + floor(random() * 50000000))::numeric(15, 2) ELSE NULL END,
     'ACTIVE'
-FROM generate_series(1, 200000) AS gs;
+FROM generate_series(1, 600000) AS gs;
 
 -- 8 attribute value / product (attribute_id ngẫu nhiên trong 1..40)
 INSERT INTO product_attribute_values (product_id, attribute_id, value, value_number)
@@ -89,5 +89,5 @@ FROM (
         gs,
         (floor(random() * 40) + 1)::bigint AS attribute_id,
         round((random() * 30)::numeric, 1) AS val
-    FROM generate_series(1, 800000) AS gs
+    FROM generate_series(1, 2400000) AS gs
 ) AS base;

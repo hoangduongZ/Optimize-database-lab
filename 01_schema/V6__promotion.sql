@@ -18,7 +18,7 @@ CREATE TABLE coupons (
     updated_at          TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
-CREATE TABLE coupon_redemptions (
+CREATE TABLE coupon_redemptions ( -- propose to track coupon usage by users, can be used for analytics and enforcing usage limits
     id           BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     coupon_id    BIGINT NOT NULL REFERENCES coupons(id),
     user_id      BIGINT NOT NULL REFERENCES users(id),
@@ -41,7 +41,7 @@ CREATE TABLE promotions (
     updated_at     TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
-CREATE TABLE promotion_products (
+CREATE TABLE promotion_products ( -- many-to-many relationship between promotions and products
     id           BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     promotion_id BIGINT NOT NULL REFERENCES promotions(id),
     product_id   BIGINT NOT NULL REFERENCES products(id),

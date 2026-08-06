@@ -1,5 +1,5 @@
--- Seed: 50,000 users + profile + 1 address mặc định/user.
--- users.id và addresses.id đều là 1..50000 (ánh xạ 1-1) -> orders sau này dùng
+-- Seed: 500,000 users + profile + 1 address mặc định/user.
+-- users.id và addresses.id đều là 1..500000 (ánh xạ 1-1) -> orders sau này dùng
 -- customer_id = shipping_address_id = billing_address_id để đơn giản hoá.
 
 INSERT INTO users (email, phone, password_hash, role, status, created_at)
@@ -11,7 +11,7 @@ SELECT
     'CUSTOMER',
     'ACTIVE',
     now() - (random() * interval '730 days')
-FROM generate_series(1, 50000) AS gs;
+FROM generate_series(1, 500000) AS gs;
 
 INSERT INTO user_profiles (user_id, full_name, gender, dob, avatar_url)
 SELECT
@@ -20,7 +20,7 @@ SELECT
     (ARRAY['MALE', 'FEMALE', 'OTHER'])[((gs % 3) + 1)],
     date '1980-01-01' + ((gs % 15000) || ' days')::interval,
     NULL
-FROM generate_series(1, 50000) AS gs;
+FROM generate_series(1, 500000) AS gs;
 
 INSERT INTO addresses (user_id, full_name, phone, street, ward, district, city, country, type, is_default)
 SELECT
@@ -34,4 +34,4 @@ SELECT
     'VN',
     'SHIPPING',
     true
-FROM generate_series(1, 50000) AS gs;
+FROM generate_series(1, 500000) AS gs;

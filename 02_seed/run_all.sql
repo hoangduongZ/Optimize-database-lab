@@ -1,4 +1,6 @@
--- Chạy toàn bộ seed data. Tổng ~2.3 triệu dòng, thường mất 1-3 phút tuỳ máy.
+-- Chạy toàn bộ seed data. Tổng ~79 triệu dòng (orders/order_items/payments ở quy mô
+-- chục triệu, giống hệ thống lớn thật) -- thường mất 15-40+ phút tuỳ máy, cần vài
+-- chục GB đĩa trống.
 -- psql -f 02_seed/run_all.sql
 \timing on
 \ir V1__reference_data.sql

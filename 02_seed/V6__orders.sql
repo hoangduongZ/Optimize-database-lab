@@ -1,5 +1,7 @@
--- Seed: 150,000 orders + 300,000 order_items (2/order) + 300,000 order_status_history (2/order)
--- + 150,000 payments (1/order).
+-- Seed: 12,000,000 orders + 24,000,000 order_items (2/order) + ~22,500,000 order_status_history
+-- (derived: 1 PENDING/order + 1 thêm cho ~87.5% order không PENDING) + 12,000,000 payments (1/order).
+-- Đây là các bảng transaction -- lệch tỉ lệ có chủ đích so với catalog (users/products) để
+-- mô phỏng đúng 1 hệ thống lớn thật: catalog tăng chậm, transaction tăng theo traffic.
 -- addresses.id == users.id (ánh xạ 1-1 ở V2) nên customer_id cũng dùng làm shipping/billing address.
 --
 -- QUAN TRỌNG: random() cần đa dạng theo dòng phải tính trong SELECT list của
@@ -34,7 +36,7 @@ SELECT
 FROM (
     SELECT
         gs,
-        (floor(random() * 50000) + 1)::bigint AS customer_id,
+        (floor(random() * 500000) + 1)::bigint AS customer_id,
         (200000 + floor(random() * 20000000))::numeric(15, 2) AS subtotal,
         (floor(random() * 500000))::numeric(15, 2) AS discount_amount,
         (CASE WHEN random() < 0.5 THEN 30000 ELSE 0 END)::numeric(15, 2) AS shipping_fee,
@@ -45,7 +47,7 @@ FROM (
         (floor(random() * 8) + 1)::int AS order_status_idx,
         (floor(random() * 5) + 1)::int AS shipping_status_idx,
         (floor(random() * 4) + 1)::int AS shipping_provider_idx
-    FROM generate_series(1, 150000) AS gs
+    FROM generate_series(1, 12000000) AS gs
 ) AS base;
 
 -- 2 order_items / order
@@ -62,10 +64,10 @@ SELECT
 FROM (
     SELECT
         gs,
-        (floor(random() * 100000) + 1)::bigint AS product_id,
+        (floor(random() * 300000) + 1)::bigint AS product_id,
         (500000 + floor(random() * 50000000))::numeric(15, 2) AS price,
         (floor(random() * 3) + 1)::int AS quantity
-    FROM generate_series(1, 300000) AS gs
+    FROM generate_series(1, 24000000) AS gs
 ) AS base;
 
 -- Lịch sử trạng thái: PENDING lúc tạo đơn + trạng thái hiện tại

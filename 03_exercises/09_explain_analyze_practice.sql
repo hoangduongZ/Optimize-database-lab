@@ -5,7 +5,7 @@
 -- Cùng 1 cột có index (id là PK), nhưng điều kiện khác selectivity -> planner chọn
 -- chiến lược khác nhau. Chạy cả 2, so sánh "Seq Scan" vs "Index Scan"/"Bitmap Heap Scan".
 EXPLAIN (ANALYZE, BUFFERS) SELECT * FROM orders WHERE id < 5;          -- rất chọn lọc
-EXPLAIN (ANALYZE, BUFFERS) SELECT * FROM orders WHERE id < 140000;     -- gần như cả bảng
+EXPLAIN (ANALYZE, BUFFERS) SELECT * FROM orders WHERE id < 11000000;   -- gần như cả bảng
 -- Câu hỏi: từ threshold (điểm) nào planner chuyển từ Index Scan sang Seq Scan? Vì sao
 -- Seq Scan lại RẺ HƠN Index Scan khi phải đọc phần lớn bảng (gợi ý: random I/O vs
 -- sequential I/O, và mỗi lần Index Scan nhảy vào heap là 1 lần đọc trang riêng lẻ).

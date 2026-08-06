@@ -22,7 +22,7 @@ WHERE variant_id = 555;
 -- ============================================================
 UPDATE inventory_items
 SET quantity_reserved = quantity_reserved + 1, version = version + 1
-WHERE variant_id BETWEEN 1 AND 50000;
+WHERE variant_id BETWEEN 1 AND 150000;
 
 EXPLAIN (ANALYZE, BUFFERS)
 SELECT quantity_available, quantity_reserved

@@ -2,8 +2,11 @@
 
 Lab PostgreSQL để luyện tối ưu query/index, dựa trên schema e-commerce trong
 [`02-database-design.md`](../e-commerce-docs/docs/backend-plan/02-database-design.md).
-Dữ liệu seed đủ lớn (~2.3 triệu dòng) để thấy khác biệt thật giữa Seq Scan và
-Index Scan — thay vì demo trên vài trăm dòng không nói lên điều gì.
+Dữ liệu seed ở quy mô hàng chục triệu dòng (~79 triệu tổng), lệch tỉ lệ như hệ
+thống lớn thật — catalog (users ~500K, products ~300K) tăng chậm, còn bảng
+transaction (orders ~12M, order_items ~24M, payments ~12M) tăng theo traffic —
+để thấy khác biệt thật giữa Seq Scan và Index Scan, thay vì demo trên vài trăm
+dòng không nói lên điều gì.
 
 ## Yêu cầu
 
@@ -19,7 +22,7 @@ docker compose exec db pg_isready -U postgres -d optimize_lab   # chờ tới kh
 
 docker compose exec -T db psql -U postgres -d optimize_lab -f /lab/00_setup/V0__extensions.sql
 docker compose exec -T db psql -U postgres -d optimize_lab -f /lab/01_schema/run_all.sql
-docker compose exec -T db psql -U postgres -d optimize_lab -f /lab/02_seed/run_all.sql   # ~1-3 phút, tuỳ máy
+docker compose exec -T db psql -U postgres -d optimize_lab -f /lab/02_seed/run_all.sql   # ~15-40+ phút, tuỳ máy
 ```
 
 Toàn bộ thư mục lab được mount vào `/lab` trong container (xem
@@ -36,9 +39,12 @@ rồi chạy lại 3 lệnh ở trên. Dừng hẳn lab (xoá luôn volume dữ 
 `docker compose down -v`.
 
 Seed data quá chậm trên máy yếu? Giảm số liệu trong các file
-`02_seed/V3__products_catalog.sql` (100,000 products) và
-`02_seed/V6__orders.sql` (150,000 orders) — giữ nguyên các phép ánh xạ số học
-(`ceil(gs / 2.0)`, ...), chỉ đổi số trong `generate_series(1, N)`.
+`02_seed/V3__products_catalog.sql` (300,000 products) và
+`02_seed/V6__orders.sql` (12,000,000 orders / 24,000,000 order_items) — giữ
+nguyên các phép ánh xạ số học (`ceil(gs / 2.0)`, ...), chỉ đổi số trong
+`generate_series(1, N)`. Nhớ đổi luôn các cận `random() * N` tham chiếu tới
+customer_id/product_id ở các file khác (V5, V7) nếu giảm users/products, kẻo
+FK ngẫu nhiên trỏ ra ngoài phạm vi thật.
 
 ## Danh sách bài lab (`03_exercises/`)
 

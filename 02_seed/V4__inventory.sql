@@ -1,4 +1,4 @@
--- Seed: 200,000 inventory_items (1 / variant) + 200,000 stock_movements (IMPORT ban đầu).
+-- Seed: 600,000 inventory_items (1 / variant) + 600,000 stock_movements (IMPORT ban đầu).
 
 INSERT INTO inventory_items (product_id, variant_id, warehouse_id, quantity_available,
                               quantity_reserved, low_stock_threshold, version, last_updated)
@@ -11,7 +11,7 @@ SELECT
     5,
     0,
     now()
-FROM generate_series(1, 200000) AS gs;
+FROM generate_series(1, 600000) AS gs;
 
 INSERT INTO stock_movements (inventory_item_id, type, quantity, note, created_at)
 SELECT

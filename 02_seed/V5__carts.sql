@@ -1,12 +1,12 @@
--- Seed: 20,000 carts + 40,000 cart_items (2/cart).
+-- Seed: 200,000 carts + 400,000 cart_items (2/cart).
 
 INSERT INTO carts (customer_id, session_id, created_at, updated_at)
 SELECT
-    (floor(random() * 50000) + 1)::bigint,
+    (floor(random() * 500000) + 1)::bigint,
     'sess-' || gs,
     now() - (random() * interval '30 days'),
     now()
-FROM generate_series(1, 20000) AS gs;
+FROM generate_series(1, 200000) AS gs;
 
 -- random() phải tính trong SELECT list của subquery có FROM generate_series
 -- trực tiếp (xem ghi chú ở đầu V3__products_catalog.sql) -- không bọc qua
@@ -21,8 +21,8 @@ SELECT
 FROM (
     SELECT
         gs,
-        (floor(random() * 100000) + 1)::bigint AS product_id,
+        (floor(random() * 300000) + 1)::bigint AS product_id,
         (floor(random() * 3) + 1)::int AS quantity,
         (500000 + floor(random() * 50000000))::numeric(15, 2) AS price
-    FROM generate_series(1, 40000) AS gs
+    FROM generate_series(1, 400000) AS gs
 ) AS base;
