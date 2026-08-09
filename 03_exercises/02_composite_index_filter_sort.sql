@@ -21,7 +21,10 @@ LIMIT 20;
 --    cột: cột filter bằng (=) đứng trước, cột dùng ORDER BY đứng sau để tránh
 --    bước Sort riêng.
 -- ============================================================
-
+CREATE INDEX idx_products_category_id ON products(category_id);
+DROP INDEX idx_products_category_id;
+CREATE INDEX idx_products_category_status_price
+    ON products (category_id, status, base_price);
 
 -- ============================================================
 -- SOLUTION
