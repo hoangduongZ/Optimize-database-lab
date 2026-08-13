@@ -22,7 +22,7 @@ WHERE attribute_values @> '{"color": "black", "ram_gb": 16}'::jsonb;
 -- ============================================================
 -- SOLUTION
 -- ============================================================
--- CREATE INDEX idx_variants_attribute_values ON product_variants USING GIN (attribute_values);
+CREATE INDEX idx_variants_attribute_values ON product_variants USING GIN (attribute_values);
 --
 -- GIN mặc định (jsonb_ops) hỗ trợ tốt operator @> (containment) với BẤT KỲ tổ hợp
 -- key nào -- không cần 1 index riêng cho mỗi cột như bảng quan hệ thông thường.
