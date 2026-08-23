@@ -25,12 +25,13 @@ WHERE product_id = 100 AND variant_id = 199 AND warehouse_id = 1;
 -- ============================================================
 -- SOLUTION
 -- ============================================================
--- ALTER TABLE inventory_items DROP CONSTRAINT inventory_items_product_id_variant_id_warehouse_id_key;
--- CREATE UNIQUE INDEX idx_inventory_lookup_covering
---     ON inventory_items (product_id, variant_id, warehouse_id)
---     INCLUDE (quantity_available, quantity_reserved, version);
---
--- VACUUM inventory_items; -- cập nhật visibility map để Index Only Scan khả dụng
+ALTER TABLE inventory_items DROP CONSTRAINT inventory_items_product_id_variant_id_warehouse_id_key;
+CREATE UNIQUE INDEX idx_inventory_lookup_covering
+    ON inventory_items (product_id, variant_id, warehouse_id)
+    INCLUDE (quantity_available, quantity_reserved, version);
+-- REVERT
+DROP INDEX idx_inventory_lookup_covering;
+VACUUM inventory_items; -- cập nhật visibility map để Index Only Scan khả dụng
 --
 -- Chạy lại EXPLAIN (ANALYZE, BUFFERS) ở PROBLEM -> kỳ vọng "Index Only Scan using
 -- idx_inventory_lookup_covering" với "Heap Fetches: 0".

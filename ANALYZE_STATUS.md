@@ -25,3 +25,13 @@ Chạy truy vấn product nhiều điệu kiện và có sort đã đánh coposi
 - Chi tiết: đánh 3 trường điều kiện và sort: status, category_id, base_price
 - Time: lần đầu 30ms lần tiếp theo 3ms
 
+05_partial_index_hot_status
+Chạy index partial bình thường (order_status, placed_at)
+- tạo index hết tầm 11s
+- Sau khi tạo index, chạy lại câu lệnh chính lần đầu hết tầm 5.4s
+    - Cụ thể planing time 1.6s
+    - Row bỏ qua rất nhiều hơn 10tr dòng
+    - read hơn 273k block
+Chạy index partial có điều kiện 
+... ON orders (placed_at) WHERE order_status = 'PENDING';
+    - Vẫn seq scan, time vẫn thế

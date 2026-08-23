@@ -5,11 +5,16 @@
 -- ============================================================
 -- PROBLEM: job quét các đơn PENDING quá X phút để tự huỷ / giải phóng tồn kho.
 -- ============================================================
+SET jit = off;
+SET jit = on;
+ANALYZE orders;
+SET enable_seqscan = on;
 EXPLAIN (ANALYZE, BUFFERS)
 SELECT id, customer_id, placed_at
 FROM orders
 WHERE order_status = 'PENDING'
   AND placed_at < now() - interval '30 minutes';
+
 
 -- ============================================================
 -- TỰ LÀM: so sánh 2 lựa chọn index sau, xem cái nào nhỏ hơn và nhanh hơn cho
@@ -18,14 +23,15 @@ WHERE order_status = 'PENDING'
 --   (a) Index thường trên toàn bảng:      (order_status, placed_at)
 --   (b) Partial index chỉ cho PENDING:    (placed_at) WHERE order_status = 'PENDING'
 -- ============================================================
-
+-- (a)
+CREATE INDEX idx_orders_status_placed_at ON orders (order_status, placed_at);
 
 -- ============================================================
 -- SOLUTION
 -- ============================================================
--- CREATE INDEX idx_orders_pending_placed_at
---     ON orders (placed_at)
---     WHERE order_status = 'PENDING';
+CREATE INDEX idx_orders_pending_placed_at
+    ON orders (placed_at)
+    WHERE order_status = 'PENDING';
 --
 -- Partial index chỉ chứa entry cho ~1/8 số dòng -> nhỏ hơn nhiều, ghi cũng rẻ hơn
 -- (chỉ phải cập nhật index khi dòng đang/đang-trở-thành PENDING), và vẫn đủ dùng
