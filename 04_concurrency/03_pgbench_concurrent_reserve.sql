@@ -31,3 +31,7 @@ COMMIT;
 
 -- Ghi chú: pgbench không tự log "affected rows" ra rõ ràng như psql --
 -- nguồn kiểm chứng thật là SELECT ở bước 3, không phải output của pgbench.
+
+
+-- pgbench là công cụ tự động chạy nhiều giao dịch trên PostgreSQL để kiểm tra hiệu năng và khả năng xử lý đồng thời. 
+-- Nó có thể chạy kịch bản SQL bạn viết, rồi đo tốc độ và thời gian xử lý
