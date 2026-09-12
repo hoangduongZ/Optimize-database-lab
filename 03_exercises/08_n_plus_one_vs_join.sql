@@ -24,14 +24,14 @@ SELECT * FROM order_items WHERE order_id = 555;
 -- ============================================================
 -- SOLUTION
 -- ============================================================
--- EXPLAIN (ANALYZE, BUFFERS)
--- SELECT o.id AS order_id, o.order_number, o.placed_at,
---        oi.id AS order_item_id, oi.product_name_snapshot, oi.quantity, oi.price_snapshot
--- FROM orders o
--- JOIN order_items oi ON oi.order_id = o.id
--- WHERE o.customer_id = 1234
--- ORDER BY o.placed_at DESC
--- LIMIT 50;
+EXPLAIN (ANALYZE, BUFFERS)
+SELECT o.id AS order_id, o.order_number, o.placed_at,
+       oi.id AS order_item_id, oi.product_name_snapshot, oi.quantity, oi.price_snapshot
+FROM orders o
+JOIN order_items oi ON oi.order_id = o.id
+WHERE o.customer_id = 1234
+ORDER BY o.placed_at DESC
+LIMIT 50;
 --
 -- Lưu ý: JOIN kiểu này trả nhiều dòng hơn (1 dòng / order_item, order bị lặp lại) --
 -- ứng dụng cần group lại theo order_id ở tầng code. Đây là đánh đổi hợp lý: 1

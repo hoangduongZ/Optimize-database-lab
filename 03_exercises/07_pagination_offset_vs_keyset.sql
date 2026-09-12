@@ -10,7 +10,7 @@ EXPLAIN (ANALYZE, BUFFERS)
 SELECT id, order_number, order_status, placed_at
 FROM orders
 ORDER BY id DESC
-OFFSET 60000 LIMIT 20;
+OFFSET 6000000 LIMIT 20;
 
 -- So sánh với trang đầu (offset nhỏ) -- gần như luôn nhanh, dễ gây "ảo tưởng" là
 -- pagination ổn khi mới demo/test với ít dữ liệu.
@@ -30,13 +30,13 @@ OFFSET 20 LIMIT 20;
 -- ============================================================
 -- SOLUTION
 -- ============================================================
--- Giả sử trang trước kết thúc ở id = 90000 (dòng cuối cùng client đã render):
--- EXPLAIN (ANALYZE, BUFFERS)
--- SELECT id, order_number, order_status, placed_at
--- FROM orders
--- WHERE id < 90000
--- ORDER BY id DESC
--- LIMIT 20;
+-- Giả sử trang trước kết thúc ở id = 6000000 (dòng cuối cùng client đã render):
+EXPLAIN (ANALYZE, BUFFERS)
+SELECT id, order_number, order_status, placed_at
+FROM orders
+WHERE id < 6000000
+ORDER BY id DESC
+LIMIT 20;
 --
 -- Query này luôn là Index Scan Backward + LIMIT 20, chi phí KHÔNG phụ thuộc vào
 -- "đang ở trang bao nhiêu" -- vì Postgres dừng lại ngay khi đủ 20 dòng, không
