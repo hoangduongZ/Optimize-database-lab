@@ -31,7 +31,7 @@ Thủ kho trưởng sẽ lên kế hoạch di chuyển như thế nào? Dưới 
 *   **Khi nào dùng:** Khi nhà kho quá nhỏ (vài thùng hàng), hoặc khi bạn muốn lấy ra số lượng hàng quá lớn (ví dụ: lấy 80% số hàng trong kho). Đi bộ một lượt gom luôn cho tiện.
 
 ### 2. Index Scan (Quét qua Chỉ mục)
-*   **Hành động:** Thủ kho sử dụng "Sổ mục lục" (Index). Việc tra sổ này cực kỳ khoa học. Khi dữ liệu được lưu trữ, hệ thống đã sắp xếp lại và ghi chú địa chỉ của từng mặt hàng. Ví dụ, nếu cấu trúc dữ liệu của một cột được quy định kích thước cố định (giả sử là 10 byte), hệ thống biết cố định 1 ô là 10. Khi cần tìm ô được sắp xếp tại vị trí *n*, nó sẽ dùng công thức `10 * n` để tính toán khoảng cách. Nhờ đó, nó dịch chuyển cực nhanh tới đúng ô chỉ định. Dựa vào địa chỉ vật lý lưu row đã được tính toán từ trước này, thủ kho chỉ việc chạy thẳng tới đúng tọa độ đó trong kho để *get* hàng ra mà không cần tìm kiếm lan man.
+*   **Hành động:** Thủ kho sử dụng sổ mục lục — index. Với index B-tree, các giá trị được tổ chức có thứ tự trong một cấu trúc cây, giúp thu hẹp nhanh phạm vi tìm kiếm. Khi tìm thấy giá trị cần tra, hệ thống lấy thông tin vị trí của dòng tương ứng để truy cập dữ liệu trong bảng, tránh phải dò từng dòng. Việc tạo index không đồng nghĩa với sắp xếp lại toàn bộ các dòng trong bảng theo thứ tự đó.
 *   **Khi nào dùng:** Khi bạn chỉ cần tìm một vài món hàng cụ thể giữa hàng triệu món (độ chọn lọc cao).
 
 ### 3. Index Only Scan (Quét Chỉ mục hoàn toàn)

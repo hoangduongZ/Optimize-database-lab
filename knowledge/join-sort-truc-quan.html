@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>JOIN & SORT — Đi theo một dòng dữ liệu</title>
+<style>
+:root{--ink:#18312f;--muted:#566a66;--paper:#f5f4ed;--surface:#fffef9;--line:#d8dfd7;--green:#126b55;--soft:#e4f1e8;--orange:#a84920;--warm:#fff0df;--violet:#694b99;--violet-soft:#f1eafa;--mono:ui-monospace,SFMono-Regular,Consolas,monospace}
+*{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}button,input,select{font:inherit}button,select{cursor:pointer}button:focus-visible,a:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid #ac521f;outline-offset:4px}button{border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:9px;padding:10px 17px;font-weight:600}button:disabled{opacity:.45;cursor:default}button:not(:disabled):hover{border-color:var(--green)}a{color:var(--green)}code,pre{font-family:var(--mono)}code{font-size:.87em}button,select,label{touch-action:manipulation}[hidden]{display:none!important}
+.shell{max-width:1260px;margin:auto;padding:32px 38px 26px}.mast{display:flex;justify-content:space-between;gap:20px;align-items:center;border-bottom:1px solid var(--line);padding-bottom:18px;font-size:12px;letter-spacing:.12em;font-weight:700}.brand{display:flex;align-items:center;gap:10px}.brandmark{display:inline-grid;place-items:center;width:30px;height:30px;background:var(--green);color:white;border-radius:8px;font-size:16px}.edition{color:var(--muted)}header{padding:33px 0 27px;display:flex;gap:30px;justify-content:space-between;align-items:end}h1{font-size:clamp(32px,4vw,51px);line-height:1.12;letter-spacing:-.045em;margin:10px 0 15px;font-weight:750}.eyebrow{font-size:12px;letter-spacing:.13em;text-transform:uppercase;color:var(--green);font-weight:700}.intro{max-width:650px;margin:0;color:var(--muted)}.tag{font-size:12px;border:1px solid var(--line);border-radius:20px;padding:7px 12px;white-space:nowrap;margin-bottom:5px}
+.tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:23px}.tab{text-align:left;display:flex;align-items:center;gap:12px;padding:15px 18px;background:transparent}.tab[aria-selected=true]{background:var(--ink);color:#fffef9;border-color:var(--ink)}.num{font:13px var(--mono);opacity:.65}.tab small{display:block;font-weight:400;font-size:12px;opacity:.8}.layout{display:grid;grid-template-columns:minmax(0,1fr) 290px;gap:25px;align-items:start}.studio{border:1px solid var(--line);border-radius:17px;background:var(--surface);overflow:hidden}.settings{padding:19px 23px;display:flex;align-items:center;justify-content:space-between;gap:15px;flex-wrap:wrap;border-bottom:1px solid var(--line)}.field{display:flex;gap:10px;align-items:center;font-size:14px;flex-wrap:wrap}select{background:var(--surface);border:1px solid var(--line);border-radius:7px;padding:7px;color:var(--ink)}.check{font-size:14px;display:flex;align-items:center;gap:8px}.check input{width:18px;height:18px;accent-color:var(--green)}.stage{padding:22px 23px}.lane-title{font-size:12px;letter-spacing:.05em;font-weight:700;color:var(--muted);margin:0 0 10px;display:flex;justify-content:space-between;gap:10px}.lane-title span:last-child{font-weight:400;letter-spacing:0}.tokens{display:flex;gap:7px;flex-wrap:wrap;min-height:41px;align-content:start}.token{border:1px solid var(--line);border-radius:7px;padding:7px 10px;background:var(--surface);font-size:13px;min-width:57px;text-align:center;transition:background .15s,border-color .15s,transform .15s}.token small{display:block;font-size:11px;color:var(--muted)}.token.active{background:var(--warm);border:2px solid var(--orange);padding:6px 9px;transform:translateY(-2px)}.token.match{background:var(--soft);border-color:var(--green)}.token.dim{opacity:.48}.token.number{font:600 15px var(--mono);min-width:43px;padding:10px 9px}.connector{margin:12px 0;text-align:center;color:var(--muted);font-size:12px}.connector strong{font-weight:500;color:var(--orange)}.order-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px}.order-grid .token{min-width:0}.bucket-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:14px 0}.bucket{border:1px dashed var(--line);border-radius:10px;min-height:95px;padding:10px}.bucket.active-bucket{border:2px solid var(--orange);background:var(--warm);padding:9px}.bucket-title{font-size:12px;color:var(--muted);margin-bottom:8px}.bucket .token{padding:4px 6px;min-width:0}.bucket .token.active{padding:3px 5px}.placeholder{font-size:13px;color:var(--muted);align-self:center}.memory{border:1px dashed var(--green);border-radius:10px;padding:13px;background:#f0f6ef;margin:15px 0}.disk{border:1px dashed #b8a9cb;border-radius:10px;padding:13px;background:var(--violet-soft)}.run{display:flex;gap:7px;align-items:center;margin:6px 0;flex-wrap:wrap}.run-label{min-width:57px;font:11px var(--mono);color:var(--violet)}.run .token.number{padding:5px 8px;min-width:35px;font-size:13px}.output{border-top:1px solid var(--line);padding-top:17px;margin-top:19px}.output .token{background:var(--soft);border-color:transparent;min-width:0}.output .tokens{min-height:79px}.status{background:var(--soft);padding:16px 23px;min-height:105px;border-top:1px solid var(--line)}.status strong{display:block;color:var(--green);font-size:15px;margin-bottom:5px}.status p{margin:0;font-size:14px}.stats{display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid var(--line);padding:17px 23px;gap:15px}.stat strong{font:600 24px var(--mono);display:block}.stat span{font-size:12px;color:var(--muted)}.controls{border-top:1px solid var(--line);padding:16px 23px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}.primary{background:var(--green);border-color:var(--green);color:white}.stepcount{font:12px var(--mono);color:var(--muted);margin-left:auto}.progress{height:4px;background:var(--line)}.progress div{height:100%;background:var(--green);transition:width .15s}
+aside h2{font-size:23px;letter-spacing:-.025em;line-height:1.25;margin:2px 0 12px}aside p{font-size:14px;color:var(--muted);margin:0 0 18px}.aside-label{font-size:11px;letter-spacing:.1em;text-transform:uppercase;font-weight:700;color:var(--green);margin:24px 0 8px}.sqlbox{background:#203632;color:#e3eee5;border-radius:11px;padding:16px;overflow:auto;font-size:12px;line-height:1.7;margin:0;white-space:pre-wrap;overflow-wrap:anywhere}.plan{background:#e9ece5;border-radius:8px;padding:12px;font-size:12px;white-space:pre-wrap;overflow-wrap:anywhere}.tip{border-left:3px solid var(--orange);padding-left:12px}.legend{display:flex;gap:15px;font-size:12px;color:var(--muted);margin-top:12px;flex-wrap:wrap}.legend span::before{content:"";display:inline-block;width:9px;height:9px;border-radius:3px;margin-right:5px;background:var(--warm);border:1px solid var(--orange)}.legend span:last-child::before{background:var(--soft);border-color:var(--green)}.learn{margin-top:26px;border-top:1px solid var(--line);padding-top:20px;display:grid;grid-template-columns:1fr 1fr;gap:28px}.learn h3{font-size:15px;margin:0 0 7px}.learn p{font-size:13px;color:var(--muted);margin:0}.quiz button{text-align:left;padding:8px 11px;font-size:13px;margin:5px 5px 0 0;font-weight:500}.quiz-answer{margin-top:8px!important;color:var(--green)!important}.footer{font-size:11px;color:var(--muted);margin-top:25px;display:flex;gap:14px;justify-content:space-between;flex-wrap:wrap}.footer a{margin-right:10px}.index-map{font:12px var(--mono);padding:11px 13px;margin:12px 0;background:#edf1ea;border-radius:8px;overflow-wrap:anywhere}.index-map strong{color:var(--green)}
+@media(max-width:980px){.layout{grid-template-columns:minmax(0,1fr) 245px}.shell{padding:25px 23px}.tab{padding:12px}.stage,.settings,.status,.stats,.controls{padding-left:17px;padding-right:17px}.order-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:760px){.layout{grid-template-columns:1fr}aside{display:grid;grid-template-columns:1fr 1fr;gap:20px}aside .aside-label:first-child{margin-top:0}.tag{display:none}.learn{gap:20px}.tabs{gap:6px}.tab{gap:7px;font-size:13px}.tab small{font-size:11px}.num{display:none}header{padding:24px 0}.shell{padding:19px 17px}.edition{font-size:10px}.stats{gap:9px}.stat strong{font-size:22px}}
+@media(max-width:460px){.shell{padding:16px 12px}.mast{font-size:10px}.edition{display:none}.tabs .tab{padding:11px 8px}.tab small{display:none}.settings{gap:12px}.stage{padding:17px 13px}.bucket{padding:7px}.bucket.active-bucket{padding:6px}.bucket-grid{gap:5px}.bucket .tokens{gap:4px}.bucket .token{font-size:12px}.learn,aside{grid-template-columns:1fr}.stepcount{width:100%;margin:0}.controls button{padding:9px 12px}.stats{padding:15px 13px}.stat span{font-size:11px}.order-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<main class="shell">
+ <div class="mast"><div class="brand"><span class="brandmark" aria-hidden="true">↳</span> DATABASE LAB / TRỰC QUAN</div><span class="edition">POSTGRESQL · JOIN & SORT</span></div>
+ <header><div><div class="eyebrow">Hiểu bằng cách quan sát</div><h1>Đi theo một dòng dữ liệu.</h1><p class="intro">Thủ kho tìm, ghép và sắp xếp như thế nào? Chọn một cách xử lý, rồi theo dõi từng bước ngay trên các thẻ dữ liệu.</p></div><span class="tag">Mô phỏng tương tác · chạy offline</span></header>
+ <nav class="tabs" role="tablist" aria-label="Chọn phép xử lý">
+  <button class="tab" role="tab" id="tab-nested" aria-controls="panel" aria-selected="true" data-mode="nested"><span class="num">01</span><span>Nested Loop<small>Tìm đơn cho từng khách</small></span></button>
+  <button class="tab" role="tab" id="tab-hash" aria-controls="panel" aria-selected="false" data-mode="hash"><span class="num">02</span><span>Hash Join<small>Chia rổ rồi dò mã</small></span></button>
+  <button class="tab" role="tab" id="tab-sort" aria-controls="panel" aria-selected="false" data-mode="sort"><span class="num">03</span><span>Sort<small>Xếp trong RAM hoặc đĩa</small></span></button>
+ </nav>
+ <div class="layout" id="panel" role="tabpanel" aria-labelledby="tab-nested">
+  <section class="studio" aria-label="Mô phỏng các bước xử lý">
+   <div class="settings">
+    <label class="field" id="customer-field">Khách cần ghép <select id="customers"><option value="2">2 khách</option><option value="4" selected>4 khách</option><option value="6">6 khách</option></select></label>
+    <label class="check" id="index-field"><input type="checkbox" id="use-index">Tra đơn bằng index</label>
+    <label class="field" id="memory-field" hidden>Bàn RAM chứa <select id="capacity"><option value="4" selected>4 thẻ</option><option value="6">6 thẻ</option><option value="12">12 thẻ</option></select></label>
+    <label class="check" id="ordered-field" hidden><input type="checkbox" id="ordered">Đọc index đã đúng thứ tự</label>
+    <span id="hash-label" class="placeholder" hidden>Hàm băm minh họa: mã khách % 3</span>
+   </div>
+   <div class="stage" id="scene"></div>
+   <div class="status" aria-live="polite" aria-atomic="true"><strong id="phase"></strong><p id="narration"></p></div>
+   <div class="stats" id="stats"></div>
+   <div class="controls"><button id="play" class="primary">Chạy tự động</button><button id="next">Bước tiếp →</button><button id="reset">Làm lại</button><span id="stepcount" class="stepcount"></span></div>
+   <div class="progress" role="progressbar" aria-label="Tiến độ mô phỏng" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div id="progress"></div></div>
+  </section>
+  <aside id="explanation"></aside>
+ </div>
+ <div class="legend"><span>Đang xử lý</span><span>Khớp / đã xuất kết quả</span></div>
+ <section class="learn"><div><h3 id="lesson-title"></h3><p id="lesson"></p></div><div class="quiz"><h3>Thử giải thích lại</h3><p id="quiz-question"></p><div id="quiz-options"></div><p id="quiz-answer" class="quiz-answer" aria-live="polite"></p></div></section>
+ <footer class="footer"><span>Mô hình học tập; số bước và số thẻ không phải số đo hiệu năng PostgreSQL.</span><span>Nguồn: <a href="https://www.postgresql.org/docs/16/using-explain.html" target="_blank" rel="noopener">EXPLAIN</a><a href="https://www.postgresql.org/docs/16/runtime-config-resource.html" target="_blank" rel="noopener">Bộ nhớ</a><a href="https://www.postgresql.org/docs/16/indexes-ordering.html" target="_blank" rel="noopener">Index & ORDER BY</a></span></footer>
+</main>
+<script>
+'use strict';
+const $=id=>document.getElementById(id);
+const names=['An','Bình','Chi','Dũng','Em','Giang'];
+const orders=[1,3,2,4,1,6,5,2,4,3,6,1].map((cid,i)=>({id:i+1,cid}));
+const values=[42,17,65,8,31,54,23,76,12,49,5,38];
+let mode='nested',events=[],cursor=0,state={},timer=null;
+const clone=x=>JSON.parse(JSON.stringify(x));
+const orderName=id=>'Đ'+String(id).padStart(2,'0');
+const customerName=id=>'K'+id+' · '+names[id-1];
+const token=(label,cls='',small='')=>`<div class="token ${cls}">${label}${small?`<small>${small}</small>`:''}</div>`;
+const numberTokens=arr=>arr.map(v=>token(v,'number')).join('');
+const empty=text=>`<span class="placeholder">${text}</span>`;
+function stop(){if(timer!==null)clearInterval(timer);timer=null;$('play').textContent='Chạy tự động';}
+function makeEvents(){
+ const n=Number($('customers').value),indexed=$('use-index').checked,cap=Number($('capacity').value),ordered=$('ordered').checked;
+ state={n,indexed,cap,ordered,phase:'Sẵn sàng',text:'',customer:null,order:null,bucket:null,buckets:[[],[],[]],output:[],compares:0,read:0,lookups:0,build:0,memory:[],runs:[],loaded:0,written:0,diskRead:0,external:!ordered&&cap<values.length};
+ events=[];cursor=0;
+ const push=(title,text,fn=()=>{})=>events.push(()=>{state.phase=title;state.text=text;fn();});
+ if(mode==='nested'){
+  state.text='Bắt đầu với '+n+' khách ở phía ngoài và 12 đơn ở phía trong. '+(indexed?'Index trên mã khách của đơn đã có sẵn.':'Với mỗi khách, mô phỏng này duyệt lại 12 đơn.');
+  for(let c=1;c<=n;c++){
+   push('Chọn khách '+customerName(c),'Giữ khách K'+c+' ở vòng ngoài; bắt đầu tìm các đơn của khách này.',()=>{state.customer=c;state.order=null;});
+   if(indexed){
+    const matches=orders.filter(o=>o.cid===c);
+    push('Tra index cho K'+c,'Index chỉ tới '+matches.map(o=>orderName(o.id)).join(', ')+'. Một lượt tra ở đây gộp các bước đi trong cây index.',()=>{state.lookups++;});
+    for(const o of matches)push('Đọc đơn '+orderName(o.id),'Mã khách trùng K'+c+' → xuất một cặp khách + đơn.',()=>{state.order=o.id;state.read++;state.output.push([c,o.id]);});
+   }else for(const o of orders){
+    const match=o.cid===c;
+    push('So K'+c+' với '+orderName(o.id),'Đơn này thuộc K'+o.cid+'. '+(match?'Trùng mã → xuất một cặp khách + đơn.':'Khác mã → tiếp tục xem đơn kế tiếp.'),()=>{state.order=o.id;state.read++;state.compares++;if(match)state.output.push([c,o.id]);});
+   }
+  }
+  push('Đã ghép xong',indexed?'Mỗi khách có một lượt tra index, rồi đọc các đơn phù hợp. Index giúp giảm số đơn phải duyệt.':'Đã kiểm tra '+n+' × 12 = '+n*12+' cặp. Chi phí lặp lại tăng khi đầu vào phía ngoài lớn hơn.',()=>{state.customer=null;state.order=null;});
+ }else if(mode==='hash'){
+  state.text='Nạp '+n+' khách vào 3 rổ trước, rồi lần lượt dò 12 đơn. Hash table này được tạo trong lúc xử lý truy vấn.';
+  for(let c=1;c<=n;c++)push('BUILD · Nạp K'+c+' vào rổ '+c%3,'Lấy mã '+c+' chia dư cho 3 → rổ '+c%3+'. Rổ chứa dòng khách hàng để ghép sau.',()=>{state.customer=c;state.bucket=c%3;state.buckets[c%3].push(c);state.build++;});
+  for(const o of orders){
+   const candidates=Array.from({length:n},(_,i)=>i+1).filter(c=>c%3===o.cid%3);
+   push('PROBE · Dò '+orderName(o.id)+' vào rổ '+o.cid%3,'Đơn thuộc K'+o.cid+'. '+(candidates.length?'Kiểm tra mã của từng khách trong rổ; cùng rổ chưa chắc cùng mã.':'Rổ trống → không có khách phù hợp trong đầu vào.'),()=>{state.order=o.id;state.customer=null;state.bucket=o.cid%3;state.read++;});
+   for(const c of candidates)push('Kiểm tra K'+c+' với '+orderName(o.id),c===o.cid?'Trùng mã K'+c+' → xuất một cặp khách + đơn.':'K'+c+' và K'+o.cid+' chỉ trùng rổ, khác mã → không ghép.',()=>{state.customer=c;state.compares++;if(c===o.cid)state.output.push([c,o.id]);});
+  }
+  push('Đã ghép xong','Đã nạp '+n+' khách và dò 12 đơn. Không cần duyệt toàn bộ khách cho mỗi đơn; vẫn kiểm tra mã trong rổ.',()=>{state.customer=null;state.order=null;state.bucket=null;});
+ }else{
+  state.text=ordered?'Giả sử planner chọn index B-tree cung cấp đúng thứ tự tăng dần. Kế hoạch này không cần node Sort.':'12 giá trị cần tăng dần. Bàn minh họa chứa tối đa '+cap+' thẻ trong giai đoạn tạo các đoạn đã sắp xếp.';
+  if(ordered){
+   for(const v of [...values].sort((a,b)=>a-b))push('Đọc theo thứ tự index','Nhận giá trị '+v+' từ luồng đã có thứ tự → chuyển thẳng ra kết quả.',()=>{state.output.push(v);state.loaded++;});
+  }else{
+   const runs=[];
+   for(let i=0;i<values.length;i+=cap){
+    const chunk=values.slice(i,i+cap),sorted=[...chunk].sort((a,b)=>a-b),runId=runs.length;
+    push('Nạp '+chunk.length+' thẻ lên bàn RAM','Lấy nhóm tiếp theo từ đầu vào. Các số trên thẻ là khóa sắp xếp, không phải kích thước byte.',()=>{state.memory=[...chunk];state.loaded+=chunk.length;});
+    push('Sắp xếp nhóm trong RAM','Sắp các thẻ hiện có theo thứ tự tăng dần.',()=>{state.memory=[...sorted];});
+    runs.push([...sorted]);
+    if(state.external)push('Ghi đoạn '+(runId+1)+' ra đĩa tạm','Giữ đoạn đã có thứ tự trên đĩa, giải phóng bàn RAM để xử lý nhóm kế tiếp.',()=>{state.runs.push([...sorted]);state.written+=sorted.length;state.memory=[];});
+   }
+   if(state.external){
+    push('MERGE · Trộn các đoạn','Xem đầu mỗi đoạn đã sắp xếp; chọn số nhỏ nhất để xuất. RAM ở đây minh họa các đầu đoạn, lược bỏ bộ đệm I/O.',()=>{state.memory=state.runs.filter(r=>r.length).map(r=>r[0]);});
+    const remaining=clone(runs);
+    while(remaining.some(r=>r.length)){
+     let min=Infinity,ri=-1;remaining.forEach((r,i)=>{if(r.length&&r[0]<min){min=r[0];ri=i;}});remaining[ri].shift();
+     const value=min,index=ri;
+     push('Xuất '+value+' từ đoạn '+(index+1),'Chọn đầu đoạn nhỏ nhất, rồi tiến sang giá trị tiếp theo của đoạn đó.',()=>{state.runs[index].shift();state.output.push(value);state.diskRead++;state.memory=state.runs.filter(r=>r.length).map(r=>r[0]);});
+    }
+   }else for(const v of runs[0])push('Xuất '+v+' từ RAM','Dữ liệu vừa trong RAM; không cần các đoạn trên đĩa tạm.',()=>{state.output.push(v);state.memory.shift();});
+  }
+  push('Đã có kết quả tăng dần',ordered?'Index phù hợp có thể cung cấp thứ tự sẵn. Có ORDER BY không đồng nghĩa luôn có node Sort.':state.external?'Đã tạo các đoạn có thứ tự rồi trộn chúng. Việc ghi và đọc dữ liệu tạm làm phát sinh thêm công việc.':'Tất cả vừa trên bàn RAM nên không cần ghi đĩa tạm.',()=>{state.memory=[];});
+ }
+}
+function render(){
+ let html='';
+ if(mode!=='sort'){
+  html+=`<div class="lane-title"><span>KHÁCH HÀNG · ${state.n} DÒNG</span><span>${mode==='nested'?'Đầu vào phía ngoài':'Phía tạo hash table'}</span></div><div class="tokens">`;
+  for(let c=1;c<=state.n;c++)html+=token(customerName(c),state.customer===c?'active':'');
+  html+='</div>';
+  if(mode==='hash')html+='<div class="bucket-grid">'+state.buckets.map((b,i)=>`<div class="bucket ${state.bucket===i?'active-bucket':''}"><div class="bucket-title">Rổ ${i} · mã % 3</div><div class="tokens">${b.map(c=>token('K'+c,state.customer===c?'active':'')).join('')||empty('Chưa có khách')}</div></div>`).join('')+'</div>';
+  else if(state.indexed)html+='<div class="index-map"><strong>Index có sẵn · mã khách → đơn</strong><br>'+Array.from({length:state.n},(_,i)=>`K${i+1} → ${orders.filter(o=>o.cid===i+1).map(o=>orderName(o.id)).join(', ')}`).join(' &nbsp; / &nbsp; ')+'</div>';
+  else html+='<div class="connector">↓ <strong>Với mỗi khách, duyệt lại các đơn phía dưới</strong> ↓</div>';
+  html+='<div class="lane-title"><span>ĐƠN HÀNG · 12 DÒNG</span><span>Mỗi thẻ ghi mã khách</span></div><div class="order-grid">';
+  for(const o of orders){let cls=state.order===o.id?'active':state.output.some(p=>p[1]===o.id)?'match':'';html+=token(orderName(o.id),cls,'khách K'+o.cid);}
+  html+='</div>';
+ }else{
+  html+='<div class="lane-title"><span>ĐẦU VÀO · 12 GIÁ TRỊ</span><span>ORDER BY tăng dần</span></div><div class="tokens">'+values.map((v,i)=>token(v,'number '+(!state.ordered&&i<state.loaded?'dim':''))).join('')+'</div>';
+  html+=`<div class="memory"><div class="lane-title"><span>BÀN RAM</span><span>${state.ordered?'Bỏ qua bước Sort':state.memory.length+' thẻ đang hiển thị'}</span></div><div class="tokens">${numberTokens(state.memory)||empty(state.ordered?'Đọc luồng index đã có thứ tự':'Bàn đang trống')}</div></div>`;
+  html+='<div class="disk"><div class="lane-title"><span>ĐĨA TẠM · CÁC ĐOẠN ĐÃ SẮP XẾP</span></div>'+(state.runs.length?state.runs.map((r,i)=>`<div class="run"><span class="run-label">Đoạn ${i+1}</span>${numberTokens(r)||empty('Đã đọc hết')}</div>`).join(''):empty(state.external?'Chưa ghi đoạn nào':'Không cần ghi dữ liệu tạm'))+'</div>';
+ }
+ html+='<div class="output"><div class="lane-title"><span>KẾT QUẢ ĐÃ PHÁT RA</span><span>'+state.output.length+' '+(mode==='sort'?'giá trị':'cặp khách + đơn')+'</span></div><div class="tokens">'+(state.output.length?(mode==='sort'?numberTokens(state.output):state.output.map(p=>token('K'+p[0]+' ↔ '+orderName(p[1]))).join('')):empty('Các kết quả sẽ xuất hiện tại đây'))+'</div></div>';
+ $('scene').innerHTML=html;$('phase').textContent=state.phase;$('narration').textContent=state.text;
+ const metrics=mode==='nested'?[[state.indexed?state.lookups:state.compares,state.indexed?'Lượt tra index':'Lần so sánh mã'],[state.read,'Dòng đơn đã đọc'],[state.output.length,'Cặp đã ghép']]:mode==='hash'?[[state.build+' / '+state.read,'Khách nạp / đơn đã dò'],[state.compares,'Lần so sánh trong rổ'],[state.output.length,'Cặp đã ghép']]:[[state.runs.length,'Đoạn tạm đã tạo'],[state.written+' / '+state.diskRead,'Giá trị ghi / đọc tạm'],[state.output.length,'Giá trị đã xuất']];
+ $('stats').innerHTML=metrics.map(([v,label])=>`<div class="stat"><strong>${v}</strong><span>${label}</span></div>`).join('');
+ $('stepcount').textContent=cursor+' / '+events.length+' bước';$('progress').style.width=(cursor/events.length*100)+'%';document.querySelector('.progress').setAttribute('aria-valuenow',Math.round(cursor/events.length*100));
+ $('next').disabled=cursor===events.length;$('play').disabled=cursor===events.length;
+}
+function explain(){
+ const joinSQL='SELECT c.name, o.id\nFROM customers c\nJOIN orders o\n  ON o.customer_id = c.id\nWHERE c.id <= '+$('customers').value+';';
+ const content={
+ nested:{title:'Một khách, rồi từng đơn.',body:'Thủ kho cầm một thẻ khách và tìm các đơn phù hợp. Xong khách này mới sang khách kế tiếp. Bật index để xem vì sao vòng lặp không nhất thiết phải quét cả kho đơn.',sql:joinSQL,plan:$('use-index').checked?'Nested Loop\n  → Khách đã lọc\n  → Index Scan trên đơn':'Nested Loop\n  → Khách đã lọc\n  → Duyệt đầu vào đơn',tip:'Đầu vào phía ngoài ít và phía trong tra cứu hiệu quả thường giúp Nested Loop có lợi. Không thể kết luận chậm chỉ vì bảng gốc có nhiều dòng.',lessonTitle:'So sánh trên cùng dữ liệu',lesson:'Chạy với 2 khách, rồi 6 khách. Tiếp theo bật index. Quan sát số dòng đơn đã đọc; số cặp đúng không đổi khi chỉ thay cách tra cứu. Mô phỏng không tính chi phí xây index hay I/O thực tế.',question:'Có index phù hợp, Nested Loop có bắt buộc quét hết bảng đơn cho mỗi khách không?',answers:['Không, có thể tra riêng các đơn phù hợp','Có, luôn phải quét hết'],correct:0,feedback:'Đúng: phía trong có thể dùng Index Scan. Vòng lặp vẫn tồn tại, nhưng mỗi lượt tìm kiếm có thể ít việc hơn.'},
+ hash:{title:'Chia rổ trước. Dò mã sau.',body:'BUILD: nạp phía khách vào các rổ. PROBE: đọc mỗi đơn, tính rổ rồi kiểm tra mã khách bên trong. Các cặp khớp được chuyển ra kết quả.',sql:joinSQL,plan:'Hash Join\n  → Quét đơn hàng\n  → Hash\n      → Khách đã lọc',tip:'Hash Join phù hợp với điều kiện bằng có hỗ trợ băm. Thường tạo hash table từ phía nhỏ hơn; nếu bộ nhớ thiếu, có thể chia nhiều batch và dùng đĩa tạm.',lessonTitle:'Cùng rổ chưa chắc cùng khách',lesson:'Với 4 khách, K1 và K4 đều vào rổ 1. Thủ kho vẫn so mã thật để tránh ghép sai. Phép chia dư ở đây chỉ để minh họa; không phải hàm băm thực tế của PostgreSQL.',question:'K1 và K4 cùng rổ. Có được ghép đơn của K1 với K4 không?',answers:['Có, vì nằm trong cùng rổ','Không, phải kiểm tra mã khách'],correct:1,feedback:'Đúng: trùng giá trị băm hoặc trùng rổ chưa đủ. Điều kiện bằng trên mã khách vẫn phải được kiểm tra.'},
+ sort:{title:'Bàn nhỏ, chia thành từng đợt.',body:'Nạp một nhóm lên bàn, xếp nhóm đó rồi ghi thành đoạn tạm nếu cần. Cuối cùng trộn các đoạn bằng cách lần lượt chọn giá trị nhỏ nhất ở đầu mỗi đoạn.',sql:'SELECT amount\nFROM orders\nORDER BY amount ASC;',plan:$('ordered').checked?'Index Scan / Index Only Scan\n  → Thứ tự phù hợp\n  → Không cần Sort':Number($('capacity').value)>=12?'Sort\n  Sort Method: quicksort\n  → Đầu vào':'Sort\n  Sort Method: external merge\n  → Đầu vào',tip:'work_mem giới hạn bộ nhớ cho từng phép xử lý, không phải toàn bộ RAM máy. Hash còn chịu hash_mem_multiplier. Đếm thẻ chỉ là mô hình, không tương đương byte.',lessonTitle:'ORDER BY có nhất thiết phải xếp lại?',lesson:'Thử bàn 4 thẻ và 12 thẻ, rồi bật index đúng thứ tự. Một index B-tree phù hợp có thể tránh Sort nếu planner chọn đường đọc đó. Chi phí dùng đĩa phụ thuộc dữ liệu, thiết bị và kế hoạch; không có hệ số chậm cố định.',question:'Khi luồng từ index đã đúng thứ tự cần trả, có luôn cần Sort nữa không?',answers:['Có, cứ ORDER BY là phải Sort','Không, có thể dùng thứ tự có sẵn'],correct:1,feedback:'Đúng: ORDER BY yêu cầu thứ tự kết quả; planner có thể lấy thứ tự đó từ index phù hợp.'}
+ }[mode];
+ const escape=s=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+ $('explanation').innerHTML=`<div><h2>${content.title}</h2><p>${content.body}</p><div class="aside-label">Câu SQL đang minh họa</div><pre class="sqlbox">${escape(content.sql)}</pre></div><div><div class="aside-label">Dấu hiệu trong EXPLAIN</div><pre class="plan">${escape(content.plan)}</pre><p style="font-size:12px">Cây kế hoạch rút gọn để học, không phải kết quả đo từ database.</p><p class="tip">${content.tip}</p></div>`;
+ $('lesson-title').textContent=content.lessonTitle;$('lesson').textContent=content.lesson;$('quiz-question').textContent=content.question;$('quiz-answer').textContent='';
+ $('quiz-options').replaceChildren(...content.answers.map((a,i)=>{const b=document.createElement('button');b.textContent=a;b.onclick=()=>{$('quiz-answer').textContent=i===content.correct?content.feedback:'Thử nghĩ lại. '+(mode==='hash'?'Cùng rổ có thể chứa nhiều mã khác nhau.':mode==='nested'?'Index đã ghi đường tới các đơn của khách cần tìm.':'Luồng dữ liệu đã đúng thứ tự từ trước.');};return b;}));
+}
+function reset(){stop();makeEvents();explain();render();}
+function advance(){if(cursor>=events.length)return;events[cursor++]();if(cursor===events.length)stop();render();}
+function changeMode(next){stop();mode=next;document.querySelectorAll('[data-mode]').forEach(b=>b.setAttribute('aria-selected',b.dataset.mode===mode));$('panel').setAttribute('aria-labelledby','tab-'+mode);$('customer-field').hidden=mode==='sort';$('index-field').hidden=mode!=='nested';$('memory-field').hidden=mode!=='sort';$('ordered-field').hidden=mode!=='sort';$('hash-label').hidden=mode!=='hash';reset();}
+document.querySelectorAll('[data-mode]').forEach(b=>{b.onclick=()=>changeMode(b.dataset.mode);b.onkeydown=e=>{const modes=['nested','hash','sort'];let index=modes.indexOf(mode);if(e.key==='ArrowRight')index=(index+1)%3;else if(e.key==='ArrowLeft')index=(index+2)%3;else if(e.key==='Home')index=0;else if(e.key==='End')index=2;else return;e.preventDefault();changeMode(modes[index]);$('tab-'+modes[index]).focus();};});
+['customers','use-index','capacity','ordered'].forEach(id=>$(id).onchange=reset);
+$('next').onclick=advance;$('reset').onclick=reset;$('play').onclick=()=>{if(timer!==null){stop();return;}if(cursor===events.length)return;$('play').textContent='Tạm dừng';advance();if(cursor<events.length)timer=setInterval(advance,650);};
+document.addEventListener('visibilitychange',()=>{if(document.hidden)stop();});
+reset();
+</script>
+</body>
+</html>
