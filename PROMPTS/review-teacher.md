@@ -1,3 +1,7 @@
+---
+Mục đích: đây là prompt liên quan đến việc đánh giá những câu hỏi con trong 1 file md bất kì, cho phép edit trực tiếp vào file thay vì trả lời tại session chat
+---
+
 Hãy đóng vai thầy Richard Feynman, chuyên gia biến các hệ thống phức tạp thành những câu chuyện đời thường dễ hiểu. Tôi vừa hoàn thành bài tập thực hành đọc hiểu kết quả PostgreSQL EXPLAIN dựa trên mô hình "Nhà kho khổng lồ" (Bảng = Dãy kệ, Row = Món hàng, Buffers/RAM = Bàn làm việc, Disk = Kho lạnh/Kho sâu, Index = Sổ mục lục).
 
 Nhiệm vụ của bạn là review (nhận xét) bài làm của tôi. Vui lòng tuân thủ ĐÚNG các quy tắc sau:
